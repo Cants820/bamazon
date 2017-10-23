@@ -2,6 +2,10 @@
 //connect to the database
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("easy-table");
+// readProducts();
+// var items = [];
+
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -17,68 +21,109 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("Welcome to Bamazon");
- 
-
+  console.log("Welcome to Bamazon \n");
+  
   readProducts();
-  // inquirer.prompt([
-
-  //   ]);
-
-
-
 });
 
+
 function readProducts() {
-  console.log("Show All Products...\n");
+  // console.log("Show All Products...\n ");
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     // Log all results of the SELECT statement
-    products = res;
-    filterProduct(products);
-    console.log(res);
-  connection.end();
-  });
-}
+    // console.log(res);
+    // for (var i = 0; i < res.length; i++){
+    // }
+      //using easy-table
+    var data = [ //displays rows
+        { 
+          item_id: res[0].item_id, 
+          product_name: res[0].product_name, 
+          department_name: res[0].department_name, 
+          price: res[0].price, 
+          stocks_quantity: res[0].stocks_quantity, 
+        }
+      ]   
 
-function updateProduct() {
-    console.log("Update Quantity...\n");
-    //
-    var queryString = "UPDATE products SET ? WHERE ?";
+      for(var i = 1; i < res.length; i++ ) {
 
-    var values = [
-      {
-        stocks_quantity: 30
-      },
-      {
-        item_id: 1
-      }
-    ]
-    var query = connection.query(queryString,values,function(err,res) {
-        console.log(res.affectedRows + "product has been updated");
-
-      }
-    );
-  console.log(query.sql);
-}  
-
-
-function filterProduct(products){
-    var productobjsArr = [];
-    var table = new Table({
-    head: ['position', 'product_name', 'department_name', 'category_name', 'price', 'stock_quantity'], 
-    //colWidths: [100, 100, 100, 100, 100, 100]
-    });
-    products.forEach(function(productObj){
-        var productArr = [];
-        for (var key in productObj) {
-            productArr.push(productObj[key]);
+      data.push(
+           { 
+          item_id: res[i].item_id, 
+          product_name: res[i].product_name, 
+          department_name: res[i].department_name, 
+          price: res[i].price, 
+          stocks_quantity: res[i].stocks_quantity, 
+           }
+        );
     }
-    productobjsArr.push(productArr);
-    });
-    productobjsArr.forEach(function(produsts){
-        console.log(produsts)
-        table.push(produsts);
-        console.log(table.toString());
-    })
+      var t = new Table
+       
+      data.forEach(function(res) {
+         t.cell('item_id', res.item_id);
+         t.cell('product_name', res.product_name);
+         t.cell('department_name', res.department_name);
+         t.cell('price, USD', res.price, Table.number(2));
+         t.cell('stocks_quantity',res.stocks_quantity);
+         t.newRow()
+      })
+       
+      console.log(t.toString());
+
+      inquirer.prompt([
+          {
+            type:'input',
+            name:'itemID',
+            message: 'What is the ID of the item you would like to buy [Quit with Q]  ? \n \n'        
+          }
+      ]).then (function (response) {
+        console.log(response.itemID);
+        // console.log("Items " + itemID.itemID);
+        updateProduct(response.itemID);
+      })
+  })
+
 }
+
+function updateProduct(itemID) {
+     var itemIDChosen = parseInt(itemID) - 1;
+     var stocksRemaining;
+     console.log("item ID Chosen " + itemIDChosen);
+     connection.query("SELECT * FROM products", function(err, res) {
+      
+      stocksRemaining = parseInt(res[itemIDChosen].stocks_quantity);
+         console.log("stocks remaining: " + stocksRemaining);
+
+    })
+
+
+    var queryString = "UPDATE products SET ? WHERE ?"
+    inquirer.prompt([
+        {
+         type:'input',
+         name:'purchaseOrder',
+         message:'How many products you want to buy?' 
+        }
+    ]).then(function (quantity){
+
+      var stocks_quantity = parseInt(stocksRemaining) - parseInt(quantity);
+      console.log("Stocks Quantity " + stocks_quantity);
+      var values = [
+        {
+          stocks_quantity: 100
+        },
+        {
+          item_id: itemID
+        }
+      ];
+      console.log("Update Quantity...\n");
+      var query = connection.query(queryString,values ,function(err,res) {
+            // console.log(res);
+            console.log(res.affectedRows + "product has been updated");
+          // console.log(res);
+        });
+      console.log(query.sql);
+        
+    })
+}  
