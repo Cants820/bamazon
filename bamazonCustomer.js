@@ -94,8 +94,7 @@ function updateProduct(itemID) {
       
       stocksRemaining = parseInt(res[itemIDChosen].stocks_quantity);
          console.log("stocks remaining: " + stocksRemaining);
-
-    })
+     })
 
 
     var queryString = "UPDATE products SET ? WHERE ?"
@@ -106,12 +105,15 @@ function updateProduct(itemID) {
          message:'How many products you want to buy?' 
         }
     ]).then(function (quantity){
+      console.log("quantity " + quantity.purchaseOrder);
+      var stocks_quantity = parseInt(stocksRemaining) - parseInt(quantity.purchaseOrder);
+      
 
-      var stocks_quantity = parseInt(stocksRemaining) - parseInt(quantity);
-      console.log("Stocks Quantity " + stocks_quantity);
+      // console.log("Stocks Quantity " + stocks_quantity);
+
       var values = [
         {
-          stocks_quantity: 100
+          stocks_quantity: stocks_quantity
         },
         {
           item_id: itemID
@@ -119,7 +121,14 @@ function updateProduct(itemID) {
       ];
       console.log("Update Quantity...\n");
       var query = connection.query(queryString,values ,function(err,res) {
+        if(stocks_quantity <= 0){
+          connection.end();
+          console.log("Insufficient quantity!!");
+        }
+        
             // console.log(res);
+
+
             console.log(res.affectedRows + "product has been updated");
           // console.log(res);
         });
