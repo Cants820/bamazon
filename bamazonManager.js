@@ -36,11 +36,21 @@ connection.connect(function(err) {
       case "View Products for Sale":
         //insert code block
           readProducts();
-
+          break;
       case "View Low Inventory":
 
       case "Add Inventory":
+      inquirer.prompt([
+            {
+              type: "input",
+              name:"itemID",
+              message: "Please choice an item you want to add more quantity ?"
+            }
+        ]).then(function(res) {
 
+          addProduct(res.itemID);
+        })
+        break;
       default:
 
     }
@@ -111,3 +121,61 @@ function readProducts() {
   })
 
 }
+
+
+function addProduct(itemID) {
+     var itemIDChosen = parseInt(itemID) - 1;
+     var stocksRemaining;
+     var productName;
+     // console.log("item ID Chosen " + itemIDChosen);
+     connection.query("SELECT * FROM products", function(err, res) {
+      
+        stocksRemaining = parseInt(res[itemIDChosen].stocks_quantity);
+        productName =res[itemIDChosen].product_name;
+         // console.log("stocks remaining: " + stocksRemaining);
+     })
+
+
+    var queryString = "UPDATE products SET ? WHERE ?"
+        inquirer.prompt([
+            {
+             type:'input',
+             name:'purchaseOrder',
+             message:'How many of the product do you want to add ?' 
+            }
+        ]).then(function (quantity){
+          // console.log("quantity " + quantity.purchaseOrder);
+          var stocks_quantity = parseInt(stocksRemaining) + parseInt(quantity.purchaseOrder);
+          
+
+          // console.log("Stocks Quantity " + stocks_quantity);
+
+          var values = [
+            {
+              stocks_quantity: stocks_quantity
+            },
+            {
+              item_id: itemID
+            }
+          ];
+          console.log("Update Quantity...\n");
+          var query = connection.query(queryString,values ,function(err,res) {
+            
+            if(stocks_quantity <= 0){//refractor
+              console.log("Insufficient quantity!!");
+              connection.end();
+            }
+
+            console.log(res);
+            
+                // console.log(res);
+
+
+                console.log(res.affectedRows);
+                console.log(productName + " has been updated");
+              // console.log(res);
+            });
+        console.log(query.sql);
+        
+    })
+}  
