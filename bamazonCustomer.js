@@ -122,8 +122,8 @@ function updateProduct(itemID) {
       console.log("Update Quantity...\n");
       var query = connection.query(queryString,values ,function(err,res) {
         if(stocks_quantity <= 0){
-          connection.end();
           console.log("Insufficient quantity!!");
+          connection.end();
         }
         
             // console.log(res);
