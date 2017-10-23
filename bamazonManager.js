@@ -21,13 +21,39 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("Welcome to Bamazon \n");
   
-  readProducts();
+  inquirer.prompt([
+    {
+     type:"list",
+     name:"managerChoice",
+     message:"List of Menu Options",
+     choices:["View Products for Sale", "View Low Inventory","Add Inventory","Add a Product"],
+    }
+  ]).then(function(choice){
+
+    // console.log(choice.managerChoice);
+    switch(choice.managerChoice){
+      case "View Products for Sale":
+        //insert code block
+          readProducts();
+
+      case "View Low Inventory":
+
+      case "Add Inventory":
+
+      default:
+
+    }
+
+
+
+  })    
+
 });
 
-
 function readProducts() {
+
+  console.log("Welcome to Bamazon Manager Portal");
   // console.log("Show All Products...\n ");
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
@@ -85,55 +111,3 @@ function readProducts() {
   })
 
 }
-
-function updateProduct(itemID) {
-     var itemIDChosen = parseInt(itemID) - 1;
-     var stocksRemaining;
-     console.log("item ID Chosen " + itemIDChosen);
-     connection.query("SELECT * FROM products", function(err, res) {
-      
-      stocksRemaining = parseInt(res[itemIDChosen].stocks_quantity);
-         console.log("stocks remaining: " + stocksRemaining);
-     })
-
-
-    var queryString = "UPDATE products SET ? WHERE ?"
-    inquirer.prompt([
-        {
-         type:'input',
-         name:'purchaseOrder',
-         message:'How many products you want to buy?' 
-        }
-    ]).then(function (quantity){
-      console.log("quantity " + quantity.purchaseOrder);
-      var stocks_quantity = parseInt(stocksRemaining) - parseInt(quantity.purchaseOrder);
-      
-
-      // console.log("Stocks Quantity " + stocks_quantity);
-
-      var values = [
-        {
-          stocks_quantity: stocks_quantity
-        },
-        {
-          item_id: itemID
-        }
-      ];
-      console.log("Update Quantity...\n");
-      var query = connection.query(queryString,values ,function(err,res) {
-        
-        if(stocks_quantity <= 0){//refractor
-          console.log("Insufficient quantity!!");
-          connection.end();
-        }
-        
-            // console.log(res);
-
-
-            console.log(res.affectedRows + "product has been updated");
-          // console.log(res);
-        });
-      console.log(query.sql);
-        
-    })
-}  
