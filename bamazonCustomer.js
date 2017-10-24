@@ -106,8 +106,15 @@ function updateProduct(itemID) {
         }
     ]).then(function (quantity){
       // console.log("quantity " + quantity.purchaseOrder);
+      
+
       var stocks_quantity = parseInt(stocksRemaining) - parseInt(quantity.purchaseOrder);
       
+  if(stocks_quantity < 0) {
+              console.log("Insufficient quantity!!");
+              connection.end();
+        
+    } else {     
 
       // console.log("Stocks Quantity " + stocks_quantity);
 
@@ -119,20 +126,20 @@ function updateProduct(itemID) {
           item_id: itemID
         }
       ];
-      console.log( stocks_quantity + " stocks remain of item ID: " + itemID );
+      console.log(stocks_quantity + " stocks remain of item ID: " + itemID );
       var query = connection.query(queryString,values ,function(err,res) {
         
-        if(stocks_quantity <= 0){//refractor
-          console.log("Insufficient quantity!!");
-          connection.end();
-        }
-        
-            // console.log(res);
-            console.log(res.affectedRows + " product has been updated \n \n");
-          // console.log(res);
-          readProducts()
+            if(stocks_quantity <= 0) {
+            } else {
+
+                // console.log(res);
+                console.log(res.affectedRows + " product has been updated \n \n");
+              // console.log(res);
+              readProducts()
+              console.log(query.sql);
+            }
         });
-       console.log(query.sql);
-        
+  }   
     })
+  
 }  
