@@ -27,7 +27,7 @@ connection.connect(function(err) {
      type:"list",
      name:"managerChoice",
      message:"List of Menu Options",
-     choices:["View Products for Sale", "View Low Inventory","Add Inventory","Add a Product"],
+     choices:["View Products for Sale", "View Low Inventory","Add Inventory","Add a Product", "Quit"],
     }
   ]).then(function(choice){
 
@@ -51,8 +51,11 @@ connection.connect(function(err) {
           addProduct(res.itemID);
         })
         break;
-      default:
-
+      case "Add a Product":
+        break;
+      case "Quit":
+        connection.end();
+        break;
     }
 
 
@@ -64,15 +67,11 @@ connection.connect(function(err) {
 function readProducts() {
 
   console.log("Welcome to Bamazon Manager Portal");
-  // console.log("Show All Products...\n ");
+  
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
-    // Log all results of the SELECT statement
-    // console.log(res);
-    // for (var i = 0; i < res.length; i++){
-    // }
       //using easy-table
-    var data = [ //displays rows
+    var data = [ //displays a single columns as placeholder 
         { 
           item_id: res[0].item_id, 
           product_name: res[0].product_name, 
@@ -84,7 +83,7 @@ function readProducts() {
 
       for(var i = 1; i < res.length; i++ ) {
 
-      data.push(
+      data.push(//add each row to table
            { 
           item_id: res[i].item_id, 
           product_name: res[i].product_name, 

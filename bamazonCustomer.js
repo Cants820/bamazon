@@ -78,7 +78,7 @@ function readProducts() {
             message: 'What is the ID of the item you would like to buy [Quit with Q]  ? \n \n'        
           }
       ]).then (function (response) {
-        console.log(response.itemID);
+        // console.log(response.itemID);
         // console.log("Items " + itemID.itemID);
         updateProduct(response.itemID);
       })
@@ -89,7 +89,7 @@ function readProducts() {
 function updateProduct(itemID) {
      var itemIDChosen = parseInt(itemID) - 1;
      var stocksRemaining;
-     console.log("item ID Chosen " + itemIDChosen);
+     // console.log("item ID Chosen " + itemIDChosen);
      connection.query("SELECT * FROM products", function(err, res) {
       
       stocksRemaining = parseInt(res[itemIDChosen].stocks_quantity);
@@ -105,7 +105,7 @@ function updateProduct(itemID) {
          message:'How many products you want to buy?' 
         }
     ]).then(function (quantity){
-      console.log("quantity " + quantity.purchaseOrder);
+      // console.log("quantity " + quantity.purchaseOrder);
       var stocks_quantity = parseInt(stocksRemaining) - parseInt(quantity.purchaseOrder);
       
 
@@ -119,7 +119,7 @@ function updateProduct(itemID) {
           item_id: itemID
         }
       ];
-      console.log("Update Quantity...\n");
+      console.log( stocks_quantity + " stocks remain of item ID: " + itemID );
       var query = connection.query(queryString,values ,function(err,res) {
         
         if(stocks_quantity <= 0){//refractor
@@ -128,12 +128,11 @@ function updateProduct(itemID) {
         }
         
             // console.log(res);
-
-
-            console.log(res.affectedRows + "product has been updated");
+            console.log(res.affectedRows + " product has been updated \n \n");
           // console.log(res);
+          readProducts()
         });
-      console.log(query.sql);
+       console.log(query.sql);
         
     })
 }  
