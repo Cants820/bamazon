@@ -1,15 +1,4 @@
- __      __       .__                                  __          
-/  \    /  \ ____ |  |   ____  ____   _____   ____   _/  |_  ____  
-\   \/\/   // __ \|  | _/ ___\/  _ \ /     \_/ __ \  \   __\/  _ \ 
- \        /\  ___/|  |_\  \__(  <_> )  Y Y  \  ___/   |  | (  <_> )
-  \__/\  /  \___  >____/\___  >____/|__|_|  /\___  >  |__|  \____/ 
-       \/       \/          \/            \/     \/                
-__________                                            
-\______   \_____    _____ _____  ____________   ____  
- |    |  _/\__  \  /     \\__  \ \___   /  _ \ /    \ 
- |    |   \ / __ \|  Y Y  \/ __ \_/    (  <_> )   |  \
- |______  /(____  /__|_|  (____  /_____ \____/|___|  /
-        \/      \/      \/     \/      \/          \/ 
+#Bamazon
 
 ##Overview 
 
@@ -17,7 +6,7 @@ A Node app that lets users edit tables. It is an App that lets users buy product
 
 ##Code Example
 
-
+![bamazon](https://media.giphy.com/media/3o7aCWLp7mA07g3SFO/giphy.gif)
 
 
 ##Listing of Technologies Used
